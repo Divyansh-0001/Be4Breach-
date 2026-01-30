@@ -11,7 +11,10 @@ import {
   Target,
   Users,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { type FormEvent, useState } from "react";
+
+import { useAuth } from "../components/auth/AuthProvider";
 
 type LoginStatus = { type: "success" | "error"; message: string } | null;
 
@@ -128,6 +131,8 @@ const validateEmail = (value: string) =>
   /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 
 export default function Home() {
+  const router = useRouter();
+  const { login } = useAuth();
   const [activeRole, setActiveRole] = useState<
     "user" | "admin" | "sso" | null
   >(null);
@@ -147,6 +152,7 @@ export default function Home() {
     setStatus: (status: LoginStatus) => void,
     setLoading: (value: boolean) => void,
     successMessage: string,
+    redirectPath: string,
   ) => {
     setStatus(null);
     setLoading(true);
@@ -156,15 +162,24 @@ export default function Home() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
+      const data = await response.json().catch(() => null);
       if (!response.ok) {
-        const data = await response.json().catch(() => null);
         setStatus({
           type: "error",
           message: data?.detail || "Authentication failed. Check your details.",
         });
         return;
       }
+      if (!data?.access_token || !data?.role) {
+        setStatus({
+          type: "error",
+          message: "Unexpected response from the authentication service.",
+        });
+        return;
+      }
+      login(data.access_token, data.role);
       setStatus({ type: "success", message: successMessage });
+      router.push(redirectPath);
     } catch (error) {
       setStatus({
         type: "error",
@@ -194,6 +209,7 @@ export default function Home() {
       setUserStatus,
       setUserLoading,
       "User token issued successfully.",
+      "/user",
     );
   };
 
@@ -216,6 +232,7 @@ export default function Home() {
       setAdminStatus,
       setAdminLoading,
       "Admin token issued successfully.",
+      "/admin",
     );
   };
 
@@ -234,6 +251,7 @@ export default function Home() {
       setSsoStatus,
       setSsoLoading,
       "SSO token validated successfully.",
+      "/user",
     );
   };
 
