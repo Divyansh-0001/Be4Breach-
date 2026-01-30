@@ -5,5 +5,5 @@ fastapi-cors
 python-jose[cryptography]
 authlib
 httpx
-passlib[bcrypt]
+bcrypt
 itsdangerous

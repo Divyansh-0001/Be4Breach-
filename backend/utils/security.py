@@ -2,17 +2,16 @@ import os
 from datetime import datetime, timedelta, timezone
 from typing import Iterable
 
+import bcrypt
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jose import JWTError, jwt
-from passlib.context import CryptContext
 
 from backend.schemas.auth import TokenPayload
 
 ROLE_ADMIN = "admin"
 ROLE_USER = "user"
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 auth_scheme = HTTPBearer()
 
 
@@ -32,11 +31,14 @@ def _jwt_exp_minutes() -> int:
 
 
 def hash_password(password: str) -> str:
-    return pwd_context.hash(password)
+    hashed = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt())
+    return hashed.decode("utf-8")
 
 
 def verify_password(password: str, password_hash: str) -> bool:
-    return pwd_context.verify(password, password_hash)
+    return bcrypt.checkpw(
+        password.encode("utf-8"), password_hash.encode("utf-8")
+    )
 
 
 def create_access_token(subject: str, role: str) -> str:
