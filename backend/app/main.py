@@ -74,4 +74,8 @@ def on_startup() -> None:
         logger.warning("JWT_SECRET_KEY is using a default value. Update for production.")
     bootstrap_admin_user()
 
+@app.get("/health")
+def health_check() -> dict[str, str]:
+    return {"status": "ok"}
+
 app.include_router(api_router, prefix="/api/v1")

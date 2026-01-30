@@ -1,0 +1,16 @@
+{
+  "name": "Be4Breach Codespace",
+  "forwardPorts": [3000, 8000],
+  "portsAttributes": {
+    "3000": {
+      "label": "Be4Breach Frontend",
+      "visibility": "public",
+      "onAutoForward": "openBrowser"
+    },
+    "8000": {
+      "label": "Be4Breach Backend API",
+      "visibility": "public",
+      "onAutoForward": "openBrowser"
+    }
+  }
+}
