@@ -60,20 +60,20 @@ export default function InfoPanel() {
   }, [loadInfo]);
 
   return (
-    <div className="rounded-lg border border-black/10 bg-white p-4 text-sm text-black/70">
-      <p className="text-xs uppercase tracking-wide text-black/40">
+    <div className="rounded-2xl border border-white/10 bg-slate-900/60 p-5 text-sm text-slate-300">
+      <p className="text-xs uppercase tracking-wide text-slate-500">
         Backend status
       </p>
       <div className="mt-2 space-y-2">
         {state === "loading" && <p>Loading backend info…</p>}
         {state === "error" && (
           <div className="space-y-2">
-            <p className="text-red-600">Backend unavailable.</p>
-            <p className="text-black/60">{error}</p>
+            <p className="text-rose-400">Backend unavailable.</p>
+            <p className="text-slate-400">{error}</p>
             <button
               type="button"
               onClick={() => void loadInfo()}
-              className="rounded border border-black/20 px-3 py-1 text-xs font-medium text-black"
+              className="rounded border border-white/20 px-3 py-1 text-xs font-medium text-white"
             >
               Retry
             </button>
@@ -81,13 +81,13 @@ export default function InfoPanel() {
         )}
         {state === "success" && data && (
           <div className="space-y-1">
-            <p className="font-medium text-black">{data.name}</p>
+            <p className="font-medium text-white">{data.name}</p>
             <p>{data.description}</p>
           </div>
         )}
       </div>
-      <p className="mt-3 text-xs text-black/40">
-        API source: <span className="text-black/60">{backendUrl}</span>
+      <p className="mt-3 text-xs text-slate-500">
+        API source: <span className="text-slate-300">{backendUrl}</span>
       </p>
     </div>
   );
