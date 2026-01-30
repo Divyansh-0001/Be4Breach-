@@ -1,5 +1,7 @@
 import Link from "next/link";
 
+import Logo from "./logo";
+
 const quickLinks = [
   { label: "Home", href: "/" },
   { label: "About", href: "/about" },
@@ -32,7 +34,7 @@ export default function SiteFooter() {
     <footer className="border-t border-white/10 bg-be4-bg">
       <div className="mx-auto grid w-full max-w-6xl gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[1.3fr_1fr_1fr_1fr]">
         <div>
-          <p className="text-lg font-semibold text-white">Be4Breach</p>
+          <Logo className="text-white" size={30} />
           <p className="mt-3 text-sm leading-relaxed text-slate-400">
             A proactive cybersecurity partner headquartered in Pune, India,
             delivering AI-driven defense, compliance assurance, and incident

@@ -1,10 +1,13 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useRef, useState } from "react";
 
 import AnimatedButton from "../components/ui/animated-button";
 import AnimatedCard from "../components/ui/animated-card";
 import AnimatedSection from "../components/ui/animated-section";
+import LoginPortal from "../components/login-portal";
+import type { AuthRole } from "../lib/auth";
 
 const heroStats = [
   { value: "25+", label: "Security specialists" },
@@ -28,7 +31,11 @@ const services = [
           stroke="currentColor"
           strokeWidth="1.4"
         />
-        <path d="M8.5 11.8L11 14.3L15.8 9.5" stroke="currentColor" strokeWidth="1.5" />
+        <path
+          d="M8.5 11.8L11 14.3L15.8 9.5"
+          stroke="currentColor"
+          strokeWidth="1.5"
+        />
       </svg>
     ),
   },
@@ -51,8 +58,19 @@ const services = [
     description: "24/7 threat monitoring, SIEM tuning, and incident triage.",
     icon: (
       <svg viewBox="0 0 24 24" className="h-6 w-6 text-be4-accent">
-        <path d="M4 12H8L10.5 6L13.5 18L16 12H20" stroke="currentColor" strokeWidth="1.4" />
-        <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.4" opacity="0.4" />
+        <path
+          d="M4 12H8L10.5 6L13.5 18L16 12H20"
+          stroke="currentColor"
+          strokeWidth="1.4"
+        />
+        <circle
+          cx="12"
+          cy="12"
+          r="9"
+          stroke="currentColor"
+          strokeWidth="1.4"
+          opacity="0.4"
+        />
       </svg>
     ),
   },
@@ -87,7 +105,11 @@ const services = [
     description: "Rapid containment, forensic analysis, and recovery support.",
     icon: (
       <svg viewBox="0 0 24 24" className="h-6 w-6 text-be4-accent">
-        <path d="M12 3.5L20 7.5V12.5C20 16.7 16.8 20.3 12 22C7.2 20.3 4 16.7 4 12.5V7.5L12 3.5Z" stroke="currentColor" strokeWidth="1.4" />
+        <path
+          d="M12 3.5L20 7.5V12.5C20 16.7 16.8 20.3 12 22C7.2 20.3 4 16.7 4 12.5V7.5L12 3.5Z"
+          stroke="currentColor"
+          strokeWidth="1.4"
+        />
         <path d="M12 8V13" stroke="currentColor" strokeWidth="1.4" />
         <circle cx="12" cy="16.5" r="1" fill="currentColor" />
       </svg>
@@ -95,7 +117,25 @@ const services = [
   },
 ];
 
-const reasons = [
+const aboutHighlights = [
+  {
+    title: "Pune, India HQ",
+    description:
+      "A fast-growing cybersecurity company with global coverage across 20+ countries.",
+  },
+  {
+    title: "Predictive Defense",
+    description:
+      "We identify gaps before adversaries exploit them, reducing exposure and downtime.",
+  },
+  {
+    title: "Client-Centric Delivery",
+    description:
+      "Dedicated security teams aligned to your business priorities and compliance needs.",
+  },
+];
+
+const trustSignals = [
   {
     title: "Threat-first intelligence",
     description:
@@ -148,6 +188,14 @@ const focusAreas = [
 ];
 
 export default function HomePage() {
+  const portalRef = useRef<HTMLDivElement | null>(null);
+  const [portalRole, setPortalRole] = useState<AuthRole>("User");
+
+  const handlePortalScroll = (role: AuthRole) => {
+    setPortalRole(role);
+    portalRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
   return (
     <div>
       <section className="relative min-h-screen overflow-hidden">
@@ -170,8 +218,7 @@ export default function HomePage() {
               transition={{ duration: 0.6, ease: "easeOut" }}
               className="mt-6 text-4xl font-semibold tracking-tight text-white sm:text-5xl lg:text-6xl"
             >
-              Stay ahead of breaches with Be4Breach&apos;s proactive defense
-              platform.
+              Be4Breach — Prevent Breaches Before They Happen
             </motion.h1>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
@@ -179,8 +226,9 @@ export default function HomePage() {
               transition={{ duration: 0.7, ease: "easeOut" }}
               className="mt-6 text-base leading-relaxed text-slate-300"
             >
-              We combine AI security, red teaming, and always-on SOC monitoring to
-              protect high-growth companies from modern threat actors.
+              We deliver elite cybersecurity services: AI defense, threat
+              simulation, SOC monitoring, and compliance assurance for modern
+              enterprises.
             </motion.p>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -188,11 +236,23 @@ export default function HomePage() {
               transition={{ duration: 0.8, ease: "easeOut" }}
               className="mt-8 flex flex-wrap gap-4"
             >
-              <AnimatedButton href="/contact" variant="primary">
-                Get Started
+              <AnimatedButton
+                variant="primary"
+                onClick={() => handlePortalScroll("User")}
+              >
+                User Login
               </AnimatedButton>
-              <AnimatedButton href="/contact" variant="secondary">
-                Request Assessment
+              <AnimatedButton
+                variant="secondary"
+                onClick={() => handlePortalScroll("Admin")}
+              >
+                Admin Login
+              </AnimatedButton>
+              <AnimatedButton
+                variant="ghost"
+                onClick={() => handlePortalScroll("User")}
+              >
+                Google SSO Login
               </AnimatedButton>
             </motion.div>
             <div className="mt-10 flex flex-wrap gap-6 text-xs uppercase tracking-[0.25em] text-slate-500">
@@ -228,33 +288,29 @@ export default function HomePage() {
         </div>
       </section>
 
+      <div ref={portalRef} id="login" />
+      <AnimatedSection className="mx-auto w-full max-w-6xl px-4 py-20 sm:px-6">
+        <LoginPortal initialRole={portalRole} />
+      </AnimatedSection>
+
       <AnimatedSection className="mx-auto w-full max-w-6xl px-4 py-20 sm:px-6">
         <div className="flex flex-col gap-3">
           <p className="text-xs uppercase tracking-[0.4em] text-be4-accent">
-            Services
+            About Be4Breach
           </p>
           <h2 className="text-3xl font-semibold text-white">
-            Premium cybersecurity coverage across every layer.
+            A cybersecurity partner built for proactive defense.
           </h2>
           <p className="text-base text-slate-400">
-            Be4Breach delivers threat modeling, AI security, SOC monitoring, and
-            compliance programs tailored for mission-critical operations.
+            Be4Breach helps high-growth teams reduce risk with predictive
+            security intelligence, hands-on advisory, and rapid response.
           </p>
         </div>
-        <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {services.map((service) => (
-            <AnimatedCard key={service.title} className="h-full">
-              <div className="flex items-center gap-3">
-                <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-be4-accent/10">
-                  {service.icon}
-                </span>
-                <h3 className="text-lg font-semibold text-white">
-                  {service.title}
-                </h3>
-              </div>
-              <p className="mt-4 text-sm text-slate-400">
-                {service.description}
-              </p>
+        <div className="mt-10 grid gap-6 md:grid-cols-3">
+          {aboutHighlights.map((item) => (
+            <AnimatedCard key={item.title} className="h-full">
+              <h3 className="text-lg font-semibold text-white">{item.title}</h3>
+              <p className="mt-3 text-sm text-slate-400">{item.description}</p>
             </AnimatedCard>
           ))}
         </div>
@@ -264,25 +320,29 @@ export default function HomePage() {
         <div className="grid gap-8 lg:grid-cols-[1.1fr_1fr]">
           <div>
             <p className="text-xs uppercase tracking-[0.4em] text-be4-accent">
-              Why Be4Breach
+              Services
             </p>
             <h2 className="mt-4 text-3xl font-semibold text-white">
-              Expert-led defense with proactive, measurable outcomes.
+              Premium cybersecurity coverage across every layer.
             </h2>
             <p className="mt-4 text-base text-slate-400">
-              We align offensive expertise, governance, and AI security into a
-              single engagement model that strengthens your posture and reduces
-              time-to-detect.
+              Be4Breach delivers threat modeling, AI security, SOC monitoring,
+              and compliance programs tailored for mission-critical operations.
             </p>
           </div>
-          <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-1">
-            {reasons.map((reason) => (
-              <AnimatedCard key={reason.title} className="h-full">
-                <h3 className="text-lg font-semibold text-white">
-                  {reason.title}
-                </h3>
-                <p className="mt-3 text-sm text-slate-400">
-                  {reason.description}
+          <div className="grid gap-6 md:grid-cols-2">
+            {services.map((service) => (
+              <AnimatedCard key={service.title} className="h-full">
+                <div className="flex items-center gap-3">
+                  <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-be4-accent/10">
+                    {service.icon}
+                  </span>
+                  <h3 className="text-lg font-semibold text-white">
+                    {service.title}
+                  </h3>
+                </div>
+                <p className="mt-4 text-sm text-slate-400">
+                  {service.description}
                 </p>
               </AnimatedCard>
             ))}
@@ -293,7 +353,30 @@ export default function HomePage() {
       <AnimatedSection className="mx-auto w-full max-w-6xl px-4 py-20 sm:px-6">
         <div className="flex flex-col gap-3">
           <p className="text-xs uppercase tracking-[0.4em] text-be4-accent">
-            How it works
+            Security Approach
+          </p>
+          <h2 className="text-3xl font-semibold text-white">
+            Trust built on intelligence, rigor, and response readiness.
+          </h2>
+        </div>
+        <div className="mt-10 grid gap-6 md:grid-cols-3">
+          {trustSignals.map((reason) => (
+            <AnimatedCard key={reason.title} className="h-full">
+              <h3 className="text-lg font-semibold text-white">
+                {reason.title}
+              </h3>
+              <p className="mt-4 text-sm text-slate-400">
+                {reason.description}
+              </p>
+            </AnimatedCard>
+          ))}
+        </div>
+      </AnimatedSection>
+
+      <AnimatedSection className="mx-auto w-full max-w-6xl px-4 py-20 sm:px-6">
+        <div className="flex flex-col gap-3">
+          <p className="text-xs uppercase tracking-[0.4em] text-be4-accent">
+            How It Works
           </p>
           <h2 className="text-3xl font-semibold text-white">
             A guided lifecycle from assessment to recovery.
