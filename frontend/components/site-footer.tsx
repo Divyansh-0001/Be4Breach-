@@ -8,9 +8,8 @@ const quickLinks = [
 ];
 
 const dashboards = [
+  { label: "User Dashboard", href: "/dashboard/user" },
   { label: "Admin Dashboard", href: "/dashboard/admin" },
-  { label: "Analyst Dashboard", href: "/dashboard/analyst" },
-  { label: "Client Dashboard", href: "/dashboard/client" },
 ];
 
 export default function SiteFooter() {

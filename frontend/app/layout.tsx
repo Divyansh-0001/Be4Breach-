@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 
+import PageTransition from "../components/page-transition";
 import SiteFooter from "../components/site-footer";
 import SiteHeader from "../components/site-header";
 
@@ -26,7 +27,9 @@ export default function RootLayout({
       <body className="min-h-screen bg-slate-950 text-slate-100 antialiased">
         <div className="flex min-h-screen flex-col">
           <SiteHeader />
-          <main className="flex-1">{children}</main>
+          <main className="flex-1">
+            <PageTransition>{children}</PageTransition>
+          </main>
           <SiteFooter />
         </div>
       </body>

@@ -9,10 +9,12 @@ type AnimatedButtonProps = {
   type?: "button" | "submit" | "reset";
   variant?: "primary" | "secondary" | "ghost";
   className?: string;
+  disabled?: boolean;
+  onClick?: () => void;
 };
 
 const baseStyles =
-  "inline-flex items-center justify-center rounded-full border px-5 py-2.5 text-sm font-semibold transition-colors";
+  "inline-flex items-center justify-center rounded-full border px-5 py-2.5 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-60";
 
 const variantStyles: Record<NonNullable<AnimatedButtonProps["variant"]>, string> =
   {
@@ -27,6 +29,8 @@ export default function AnimatedButton({
   type = "button",
   variant = "primary",
   className,
+  disabled,
+  onClick,
 }: AnimatedButtonProps) {
   const styles = `${baseStyles} ${variantStyles[variant]} ${className ?? ""}`;
 
@@ -48,6 +52,8 @@ export default function AnimatedButton({
   return (
     <motion.button
       type={type}
+      disabled={disabled}
+      onClick={onClick}
       whileHover={{ scale: 1.03 }}
       whileTap={{ scale: 0.97 }}
       transition={{ type: "spring", stiffness: 260, damping: 18 }}

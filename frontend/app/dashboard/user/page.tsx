@@ -8,35 +8,26 @@ import AnimatedSection from "../../../components/ui/animated-section";
 import RoleGuard from "../../../components/auth/role-guard";
 import { fetchJson } from "../../../lib/api";
 
-type AdminDashboardSummary = {
-  incidents?: number;
+type UserDashboardSummary = {
+  alerts?: number;
   complianceScore?: number;
-  activeClients?: number;
+  monitoringStatus?: string;
 };
 
-const adminActions = [
-  {
-    title: "Governance workflows",
-    detail: "Manage compliance, audits, and policy updates.",
-  },
-  {
-    title: "SOC operations",
-    detail: "Review real-time monitoring and escalation paths.",
-  },
-  {
-    title: "Client portfolio",
-    detail: "Track engagement health and service delivery metrics.",
-  },
+const quickLinks = [
+  { title: "Incident status", detail: "Review open and resolved incidents." },
+  { title: "Compliance readiness", detail: "Track GDPR, ISO, and NIST goals." },
+  { title: "Security reports", detail: "Download executive summaries." },
 ];
 
-export default function AdminDashboardPage() {
-  const [summary, setSummary] = useState<AdminDashboardSummary | null>(null);
+export default function UserDashboardPage() {
+  const [summary, setSummary] = useState<UserDashboardSummary | null>(null);
   const [status, setStatus] = useState<"idle" | "loading" | "ready">("idle");
 
   useEffect(() => {
     let isMounted = true;
     setStatus("loading");
-    fetchJson<AdminDashboardSummary>("/api/v1/dashboard/admin/summary")
+    fetchJson<UserDashboardSummary>("/api/v1/dashboard/user/summary")
       .then((data) => {
         if (isMounted) {
           setSummary(data);
@@ -55,25 +46,24 @@ export default function AdminDashboardPage() {
   }, []);
 
   return (
-    <RoleGuard role="Admin">
+    <RoleGuard role="User">
       <AnimatedSection className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6">
         <p className="text-sm uppercase tracking-[0.3em] text-sky-300">
-          Admin Dashboard
+          User Dashboard
         </p>
         <h1 className="mt-4 text-4xl font-semibold text-white sm:text-5xl">
-          Security leadership command center.
+          Welcome back to your Be4Breach security overview.
         </h1>
         <p className="mt-6 max-w-3xl text-base text-slate-300">
-          Monitor enterprise-wide risk posture, compliance readiness, and SOC
-          operations. This dashboard is prepared to connect with live backend
-          insights once authentication and data services are enabled.
+          This workspace will surface risk insights, compliance progress, and
+          proactive recommendations once the backend data feeds are connected.
         </p>
         <div className="mt-8 flex flex-wrap gap-4">
           <AnimatedButton href="/services" variant="ghost">
-            Review service catalog
+            Review services
           </AnimatedButton>
           <AnimatedButton href="/contact" variant="primary">
-            Schedule leadership briefing
+            Request an update
           </AnimatedButton>
         </div>
       </AnimatedSection>
@@ -82,15 +72,15 @@ export default function AdminDashboardPage() {
         <div className="grid gap-6 md:grid-cols-3">
           <AnimatedCard>
             <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
-              Active incidents
+              Open alerts
             </p>
             <p className="mt-3 text-3xl font-semibold text-white">
-              {summary?.incidents ?? "--"}
+              {summary?.alerts ?? "--"}
             </p>
             <p className="mt-2 text-sm text-slate-400">
               {status === "loading"
-                ? "Syncing incident data..."
-                : "Awaiting SOC telemetry integration."}
+                ? "Syncing alert data..."
+                : "Awaiting live feed integration."}
             </p>
           </AnimatedCard>
           <AnimatedCard>
@@ -103,29 +93,27 @@ export default function AdminDashboardPage() {
             <p className="mt-2 text-sm text-slate-400">
               {status === "ready"
                 ? "Updated from backend API."
-                : "Awaiting governance metrics."}
+                : "Ready to ingest audit metrics."}
             </p>
           </AnimatedCard>
           <AnimatedCard>
             <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
-              Active clients
+              Monitoring status
             </p>
             <p className="mt-3 text-3xl font-semibold text-white">
-              {summary?.activeClients ?? "--"}
+              {summary?.monitoringStatus ?? "Standby"}
             </p>
             <p className="mt-2 text-sm text-slate-400">
-              Real-time client insights queued.
+              SOC feed will populate when connected.
             </p>
           </AnimatedCard>
         </div>
 
         <div className="mt-10 grid gap-6 md:grid-cols-3">
-          {adminActions.map((action) => (
-            <AnimatedCard key={action.title} className="h-full">
-              <h2 className="text-lg font-semibold text-white">
-                {action.title}
-              </h2>
-              <p className="mt-2 text-sm text-slate-400">{action.detail}</p>
+          {quickLinks.map((link) => (
+            <AnimatedCard key={link.title} className="h-full">
+              <h2 className="text-lg font-semibold text-white">{link.title}</h2>
+              <p className="mt-2 text-sm text-slate-400">{link.detail}</p>
             </AnimatedCard>
           ))}
         </div>

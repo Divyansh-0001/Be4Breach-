@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import Logo from "./logo";
+import AuthStatus from "./auth/auth-status";
 import AnimatedButton from "./ui/animated-button";
 
 const primaryLinks = [
@@ -11,9 +12,8 @@ const primaryLinks = [
 ];
 
 const dashboardLinks = [
-  { label: "Dashboard (Admin)", href: "/dashboard/admin" },
-  { label: "Dashboard (Analyst)", href: "/dashboard/analyst" },
-  { label: "Dashboard (Client)", href: "/dashboard/client" },
+  { label: "User Dashboard", href: "/dashboard/user" },
+  { label: "Admin Dashboard", href: "/dashboard/admin" },
 ];
 
 export default function SiteHeader() {
@@ -46,6 +46,7 @@ export default function SiteHeader() {
           <AnimatedButton href="/contact" variant="secondary">
             Book a consultation
           </AnimatedButton>
+          <AuthStatus />
         </div>
         <details className="relative md:hidden">
           <summary className="cursor-pointer list-none rounded-full border border-white/10 px-4 py-2 text-sm font-semibold text-white">
@@ -75,8 +76,13 @@ export default function SiteHeader() {
                 </Link>
               ))}
             </div>
-            <div className="mt-4">
-              <AnimatedButton href="/contact" variant="primary" className="w-full">
+            <div className="mt-4 flex flex-col gap-3">
+              <AuthStatus className="w-full" fullWidth />
+              <AnimatedButton
+                href="/contact"
+                variant="primary"
+                className="w-full"
+              >
                 Book a consultation
               </AnimatedButton>
             </div>
