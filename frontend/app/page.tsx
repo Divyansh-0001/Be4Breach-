@@ -34,6 +34,9 @@ const stagger = {
   },
 };
 
+const hoverLift = { y: -6 };
+const hoverTransition = { type: "spring", stiffness: 300, damping: 20 };
+
 const stats = [
   { value: "25+", label: "Top security specialists" },
   { value: "50+", label: "Global clients" },
@@ -161,6 +164,7 @@ export default function Home() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
+        cache: "no-store",
       });
       const data = await response.json().catch(() => null);
       if (!response.ok) {
@@ -329,6 +333,9 @@ export default function Home() {
               <motion.div
                 key={stat.label}
                 variants={fadeUp}
+                whileHover={hoverLift}
+                whileTap={{ scale: 0.98 }}
+                transition={hoverTransition}
                 className="rounded-2xl border border-white/10 bg-white/5 p-5"
               >
                 <p className="text-2xl font-semibold text-white">
@@ -371,8 +378,10 @@ export default function Home() {
               className="grid gap-4 md:grid-cols-2"
             >
               {journey.map((item) => (
-                <div
+                <motion.div
                   key={item.year}
+                  whileHover={hoverLift}
+                  transition={hoverTransition}
                   className="rounded-2xl border border-white/10 bg-white/5 p-4"
                 >
                   <p className="text-xs font-semibold uppercase tracking-[0.3em] text-red-400">
@@ -382,7 +391,7 @@ export default function Home() {
                     {item.title}
                   </p>
                   <p className="text-sm text-white/60">{item.detail}</p>
-                </div>
+                </motion.div>
               ))}
             </motion.div>
           </motion.div>
@@ -395,6 +404,8 @@ export default function Home() {
           >
             <motion.div
               variants={fadeUp}
+              whileHover={hoverLift}
+              transition={hoverTransition}
               className="rounded-2xl border border-white/10 bg-white/5 p-6"
             >
               <p className="text-sm font-semibold uppercase tracking-[0.3em] text-white/50">
@@ -417,6 +428,8 @@ export default function Home() {
             </motion.div>
             <motion.div
               variants={fadeUp}
+              whileHover={hoverLift}
+              transition={hoverTransition}
               className="rounded-2xl border border-white/10 bg-white/5 p-6"
             >
               <p className="text-sm font-semibold uppercase tracking-[0.3em] text-white/50">
@@ -475,6 +488,9 @@ export default function Home() {
                   whileInView="show"
                   viewport={{ once: true, amount: 0.3 }}
                   variants={fadeUp}
+                  whileHover={hoverLift}
+                  whileTap={{ scale: 0.98 }}
+                  transition={hoverTransition}
                   className="rounded-2xl border border-white/10 bg-white/5 p-6"
                 >
                   <div className="flex items-center gap-3">
@@ -508,6 +524,9 @@ export default function Home() {
               <motion.div
                 key={story.title}
                 variants={fadeUp}
+                whileHover={hoverLift}
+                whileTap={{ scale: 0.98 }}
+                transition={hoverTransition}
                 className="rounded-2xl border border-white/10 bg-white/5 p-6"
               >
                 <p className="text-sm font-semibold text-white">
@@ -550,6 +569,8 @@ export default function Home() {
               whileInView="show"
               viewport={{ once: true, amount: 0.3 }}
               variants={fadeUp}
+              whileHover={hoverLift}
+              transition={hoverTransition}
               onSubmit={handleUserSubmit}
               className={`rounded-2xl border border-white/10 bg-white/5 p-6 ${
                 activeRole === "user" ? "ring-1 ring-red-400" : ""
@@ -594,13 +615,16 @@ export default function Home() {
                   required
                 />
               </div>
-              <button
+              <motion.button
                 className="mt-5 flex w-full items-center justify-center rounded-xl bg-red-500 py-3 text-sm font-semibold text-white transition hover:bg-red-400 disabled:cursor-not-allowed disabled:opacity-60"
                 type="submit"
                 disabled={userLoading}
+                whileHover={{ y: -2 }}
+                whileTap={{ scale: 0.98 }}
+                transition={hoverTransition}
               >
                 {userLoading ? "Signing in..." : "Sign in as user"}
-              </button>
+              </motion.button>
               {userStatus && (
                 <p
                   className={`mt-3 text-xs ${
@@ -620,6 +644,8 @@ export default function Home() {
               whileInView="show"
               viewport={{ once: true, amount: 0.3 }}
               variants={fadeUp}
+              whileHover={hoverLift}
+              transition={hoverTransition}
               onSubmit={handleAdminSubmit}
               className={`rounded-2xl border border-white/10 bg-white/5 p-6 ${
                 activeRole === "admin" ? "ring-1 ring-red-400" : ""
@@ -666,13 +692,16 @@ export default function Home() {
                   required
                 />
               </div>
-              <button
+              <motion.button
                 className="mt-5 flex w-full items-center justify-center rounded-xl border border-red-400 bg-transparent py-3 text-sm font-semibold text-white transition hover:bg-red-500/20 disabled:cursor-not-allowed disabled:opacity-60"
                 type="submit"
                 disabled={adminLoading}
+                whileHover={{ y: -2 }}
+                whileTap={{ scale: 0.98 }}
+                transition={hoverTransition}
               >
                 {adminLoading ? "Signing in..." : "Sign in as admin"}
-              </button>
+              </motion.button>
               {adminStatus && (
                 <p
                   className={`mt-3 text-xs ${
@@ -692,6 +721,8 @@ export default function Home() {
               whileInView="show"
               viewport={{ once: true, amount: 0.3 }}
               variants={fadeUp}
+              whileHover={hoverLift}
+              transition={hoverTransition}
               onSubmit={handleSsoSubmit}
               className={`rounded-2xl border border-white/10 bg-white/5 p-6 ${
                 activeRole === "sso" ? "ring-1 ring-red-400" : ""
@@ -716,19 +747,25 @@ export default function Home() {
                   required
                 />
               </div>
-              <button
+              <motion.button
                 className="mt-5 flex w-full items-center justify-center rounded-xl bg-white/10 py-3 text-sm font-semibold text-white transition hover:bg-white/20 disabled:cursor-not-allowed disabled:opacity-60"
                 type="submit"
                 disabled={ssoLoading}
+                whileHover={{ y: -2 }}
+                whileTap={{ scale: 0.98 }}
+                transition={hoverTransition}
               >
                 {ssoLoading ? "Verifying..." : "Verify token"}
-              </button>
-              <a
+              </motion.button>
+              <motion.a
                 className="mt-3 flex w-full items-center justify-center rounded-xl border border-white/20 py-2 text-xs uppercase tracking-[0.2em] text-white/70 transition hover:border-red-400 hover:text-white"
                 href={`${apiBase}/google/login`}
+                whileHover={{ y: -2 }}
+                whileTap={{ scale: 0.98 }}
+                transition={hoverTransition}
               >
                 Start Google OAuth
-              </a>
+              </motion.a>
               {ssoStatus && (
                 <p
                   className={`mt-3 text-xs ${

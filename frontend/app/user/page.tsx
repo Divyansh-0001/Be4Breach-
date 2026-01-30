@@ -23,6 +23,9 @@ type ServiceItem = {
 const apiBase =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000";
 
+const hoverLift = { y: -6 };
+const hoverTransition = { type: "spring", stiffness: 300, damping: 20 };
+
 export default function UserDashboard() {
   const { auth, logout } = useAuth();
   const router = useRouter();
@@ -41,9 +44,11 @@ export default function UserDashboard() {
         const [summaryResponse, servicesResponse] = await Promise.all([
           fetch(`${apiBase}/user/dashboard`, {
             headers: { Authorization: `Bearer ${auth.token}` },
+            cache: "no-store",
           }),
           fetch(`${apiBase}/user/services`, {
             headers: { Authorization: `Bearer ${auth.token}` },
+            cache: "no-store",
           }),
         ]);
 
@@ -106,7 +111,11 @@ export default function UserDashboard() {
           </div>
 
           {summary && (
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+            <motion.div
+              className="rounded-2xl border border-white/10 bg-white/5 p-6"
+              whileHover={hoverLift}
+              transition={hoverTransition}
+            >
               <div className="flex items-center gap-3">
                 <User className="h-5 w-5 text-red-400" />
                 <p className="text-lg font-semibold text-white">
@@ -121,11 +130,15 @@ export default function UserDashboard() {
                   </li>
                 ))}
               </ul>
-            </div>
+            </motion.div>
           )}
 
           <div className="grid gap-6 md:grid-cols-2">
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+            <motion.div
+              className="rounded-2xl border border-white/10 bg-white/5 p-6"
+              whileHover={hoverLift}
+              transition={hoverTransition}
+            >
               <div className="flex items-center gap-3">
                 <Shield className="h-5 w-5 text-red-400" />
                 <h2 className="text-lg font-semibold text-white">
@@ -136,8 +149,12 @@ export default function UserDashboard() {
                 Stay informed on assessments, security posture, and training
                 progress in one place.
               </p>
-            </div>
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+            </motion.div>
+            <motion.div
+              className="rounded-2xl border border-white/10 bg-white/5 p-6"
+              whileHover={hoverLift}
+              transition={hoverTransition}
+            >
               <div className="flex items-center gap-3">
                 <ClipboardCheck className="h-5 w-5 text-red-400" />
                 <h2 className="text-lg font-semibold text-white">
@@ -157,7 +174,7 @@ export default function UserDashboard() {
                   </li>
                 ))}
               </ul>
-            </div>
+            </motion.div>
           </div>
 
           {error && (

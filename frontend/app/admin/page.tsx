@@ -21,6 +21,9 @@ type MessageResponse = {
 const apiBase =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000";
 
+const hoverLift = { y: -6 };
+const hoverTransition = { type: "spring", stiffness: 300, damping: 20 };
+
 export default function AdminDashboard() {
   const { auth, logout } = useAuth();
   const router = useRouter();
@@ -39,9 +42,11 @@ export default function AdminDashboard() {
         const [summaryResponse, alertsResponse] = await Promise.all([
           fetch(`${apiBase}/admin/dashboard`, {
             headers: { Authorization: `Bearer ${auth.token}` },
+            cache: "no-store",
           }),
           fetch(`${apiBase}/admin/alerts`, {
             headers: { Authorization: `Bearer ${auth.token}` },
+            cache: "no-store",
           }),
         ]);
 
@@ -104,7 +109,11 @@ export default function AdminDashboard() {
           </div>
 
           {summary && (
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+            <motion.div
+              className="rounded-2xl border border-white/10 bg-white/5 p-6"
+              whileHover={hoverLift}
+              transition={hoverTransition}
+            >
               <div className="flex items-center gap-3">
                 <UserCog className="h-5 w-5 text-red-400" />
                 <p className="text-lg font-semibold text-white">
@@ -119,11 +128,15 @@ export default function AdminDashboard() {
                   </li>
                 ))}
               </ul>
-            </div>
+            </motion.div>
           )}
 
           <div className="grid gap-6 md:grid-cols-2">
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+            <motion.div
+              className="rounded-2xl border border-white/10 bg-white/5 p-6"
+              whileHover={hoverLift}
+              transition={hoverTransition}
+            >
               <div className="flex items-center gap-3">
                 <Shield className="h-5 w-5 text-red-400" />
                 <h2 className="text-lg font-semibold text-white">
@@ -145,8 +158,12 @@ export default function AdminDashboard() {
                   Partner Oversight
                 </span>
               </div>
-            </div>
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+            </motion.div>
+            <motion.div
+              className="rounded-2xl border border-white/10 bg-white/5 p-6"
+              whileHover={hoverLift}
+              transition={hoverTransition}
+            >
               <div className="flex items-center gap-3">
                 <Bell className="h-5 w-5 text-red-400" />
                 <h2 className="text-lg font-semibold text-white">
@@ -159,7 +176,7 @@ export default function AdminDashboard() {
               <p className="mt-4 text-xs text-white/50">
                 All alerts are monitored by the Be4Breach SOC.
               </p>
-            </div>
+            </motion.div>
           </div>
 
           {error && (
