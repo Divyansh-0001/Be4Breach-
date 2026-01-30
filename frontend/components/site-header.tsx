@@ -1,4 +1,8 @@
+"use client";
+
 import Link from "next/link";
+import { motion, useMotionValueEvent, useScroll } from "framer-motion";
+import { useState } from "react";
 
 import Logo from "./logo";
 import AuthStatus from "./auth/auth-status";
@@ -17,8 +21,24 @@ const dashboardLinks = [
 ];
 
 export default function SiteHeader() {
+  const { scrollY } = useScroll();
+  const [scrolled, setScrolled] = useState(false);
+
+  useMotionValueEvent(scrollY, "change", (latest) => {
+    setScrolled(latest > 8);
+  });
+
   return (
-    <header className="sticky top-0 z-50 border-b border-white/10 bg-slate-950/80 backdrop-blur">
+    <motion.header
+      initial={{ y: -20, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.4, ease: "easeOut" }}
+      className={`sticky top-0 z-50 border-b backdrop-blur transition ${
+        scrolled
+          ? "border-white/10 bg-be4-bg/85 shadow-[0_10px_30px_rgba(2,6,23,0.6)]"
+          : "border-transparent bg-transparent"
+      }`}
+    >
       <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
         <Logo />
         <nav className="hidden items-center gap-6 md:flex">
@@ -31,7 +51,7 @@ export default function SiteHeader() {
               {link.label}
             </Link>
           ))}
-          <span className="h-5 w-px bg-white/15" aria-hidden />
+          <span className="h-5 w-px bg-white/10" aria-hidden />
           {dashboardLinks.map((link) => (
             <Link
               key={link.href}
@@ -44,7 +64,7 @@ export default function SiteHeader() {
         </nav>
         <div className="hidden items-center gap-3 md:flex">
           <AnimatedButton href="/contact" variant="secondary">
-            Book a consultation
+            Request assessment
           </AnimatedButton>
           <AuthStatus />
         </div>
@@ -52,7 +72,7 @@ export default function SiteHeader() {
           <summary className="cursor-pointer list-none rounded-full border border-white/10 px-4 py-2 text-sm font-semibold text-white">
             Menu
           </summary>
-          <div className="absolute right-0 mt-3 w-64 rounded-2xl border border-white/10 bg-slate-950/95 p-4 shadow-2xl">
+          <div className="absolute right-0 mt-3 w-64 rounded-2xl border border-white/10 bg-be4-bg/95 p-4 shadow-2xl">
             <div className="flex flex-col gap-2">
               {primaryLinks.map((link) => (
                 <Link
@@ -83,12 +103,12 @@ export default function SiteHeader() {
                 variant="primary"
                 className="w-full"
               >
-                Book a consultation
+                Request assessment
               </AnimatedButton>
             </div>
           </div>
         </details>
       </div>
-    </header>
+    </motion.header>
   );
 }

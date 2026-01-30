@@ -14,13 +14,16 @@ type AnimatedButtonProps = {
 };
 
 const baseStyles =
-  "inline-flex items-center justify-center rounded-full border px-5 py-2.5 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-60";
+  "inline-flex items-center justify-center rounded-full border px-5 py-2.5 text-sm font-semibold transition-all disabled:cursor-not-allowed disabled:opacity-60";
 
 const variantStyles: Record<NonNullable<AnimatedButtonProps["variant"]>, string> =
   {
-    primary: "border-transparent bg-sky-400 text-slate-950 hover:bg-sky-300",
-    secondary: "border-white/10 bg-slate-900 text-white hover:bg-slate-800",
-    ghost: "border-white/10 text-white hover:bg-white/5",
+    primary:
+      "border-transparent bg-be4-accent text-white shadow-glow hover:bg-be4-accent-strong hover:shadow-glow-strong",
+    secondary:
+      "border-be4-border bg-be4-panel text-white hover:border-be4-accent/60 hover:text-white",
+    ghost:
+      "border-transparent bg-transparent text-white/80 hover:text-white hover:bg-white/5",
   };
 
 export default function AnimatedButton({
