@@ -6,3 +6,4 @@ python-jose[cryptography]
 authlib
 httpx
 passlib[bcrypt]
+itsdangerous
