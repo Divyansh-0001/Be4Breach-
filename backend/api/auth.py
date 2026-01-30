@@ -2,7 +2,7 @@ import os
 
 from fastapi import APIRouter, HTTPException, Request
 
-from utils.google_oauth import build_google_oauth
+from backend.utils.google_oauth import build_google_oauth
 
 router = APIRouter()
 
