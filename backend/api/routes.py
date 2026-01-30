@@ -1,46 +1,53 @@
 from typing import List
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter
 
-from backend.schemas.auth import TokenPayload
 from backend.schemas.common import MessageResponse, ServiceItem
-from backend.utils.security import ROLE_ADMIN, ROLE_USER, require_role
 
 router = APIRouter()
 
 SERVICES: List[ServiceItem] = [
     ServiceItem(
-        id="phishing-sim",
-        name="Phishing Simulations",
-        description="Run simulations to assess employee readiness.",
+        id="ai-security",
+        name="AI Security",
+        description="Secure AI models against adversarial and data threats.",
     ),
     ServiceItem(
-        id="training",
-        name="Security Training",
-        description="Interactive security awareness training modules.",
+        id="cloud-security",
+        name="Cloud Security",
+        description="Protect multi-cloud environments with continuous monitoring.",
     ),
     ServiceItem(
-        id="reporting",
-        name="Incident Reporting",
-        description="Centralized reporting for security incidents.",
+        id="red-teaming",
+        name="Penetration Testing & Red Teaming",
+        description="Simulate real-world attacks to expose vulnerabilities.",
+    ),
+    ServiceItem(
+        id="soc-monitoring",
+        name="SOC Monitoring",
+        description="24/7 detection and response through CoE & SOC labs.",
     ),
 ]
 
 
 @router.get("/services", response_model=List[ServiceItem])
-def get_services(_: TokenPayload = Depends(require_role(ROLE_USER))):
+def get_services():
     return SERVICES
 
 
 @router.get("/about", response_model=MessageResponse)
 def get_about():
     return MessageResponse(
-        message="Be4Breach helps teams build stronger security awareness."
+        message=(
+            "Be4Breach is a cybersecurity company headquartered in Pune, India, "
+            "focused on predicting threats and closing security gaps before they "
+            "impact business operations."
+        )
     )
 
 
 @router.get("/contact", response_model=MessageResponse)
-def get_contact(_: TokenPayload = Depends(require_role(ROLE_ADMIN))):
+def get_contact():
     return MessageResponse(
-        message="Admin contact: security-ops@be4breach.example"
+        message="Contact: +91 9461915152 • contact@be4breach.com"
     )
