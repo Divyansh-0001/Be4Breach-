@@ -6,24 +6,25 @@ from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 
 from backend.api.auth import router as auth_router
+from backend.api.routes import router as routes_router
 
 load_dotenv()
 
 app = FastAPI(title="Be4Breach API")
 
-origins_env = os.getenv("CORS_ORIGINS", "*")
+origins_env = os.getenv("CORS_ALLOW_ORIGINS", "http://localhost:3000")
 origins = [origin.strip() for origin in origins_env.split(",") if origin.strip()]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins or ["*"],
+    allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST"],
+    allow_headers=["Authorization", "Content-Type"],
 )
 app.add_middleware(
     SessionMiddleware,
-    secret_key=os.getenv("SESSION_SECRET", "change-me-in-production"),
+    secret_key=os.getenv("SESSION_SECRET", "dev-session-secret"),
 )
 
 
@@ -32,4 +33,5 @@ def health_check() -> dict:
     return {"status": "ok"}
 
 
-app.include_router(auth_router, prefix="/auth", tags=["auth"])
+app.include_router(auth_router, tags=["auth"])
+app.include_router(routes_router, tags=["content"])

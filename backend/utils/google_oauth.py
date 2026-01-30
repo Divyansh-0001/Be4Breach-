@@ -1,7 +1,8 @@
 import os
 
+import httpx
 from authlib.integrations.starlette_client import OAuth
-from fastapi import HTTPException
+from fastapi import HTTPException, status
 
 GOOGLE_METADATA_URL = "https://accounts.google.com/.well-known/openid-configuration"
 
@@ -26,3 +27,24 @@ def build_google_oauth() -> OAuth:
         client_kwargs={"scope": "openid email profile"},
     )
     return oauth
+
+
+async def verify_google_id_token(id_token: str) -> dict:
+    async with httpx.AsyncClient(timeout=10.0) as client:
+        response = await client.get(
+            "https://oauth2.googleapis.com/tokeninfo",
+            params={"id_token": id_token},
+        )
+    if response.status_code != 200:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid Google ID token",
+        )
+    payload = response.json()
+    expected_audience = os.getenv("GOOGLE_CLIENT_ID")
+    if expected_audience and payload.get("aud") != expected_audience:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Google token audience mismatch",
+        )
+    return payload
