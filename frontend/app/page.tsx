@@ -1,4 +1,4 @@
-import { backendUrl } from "@/lib/config";
+import InfoPanel from "@/components/InfoPanel";
 
 export default function Home() {
   return (
@@ -11,16 +11,7 @@ export default function Home() {
             layout and routing are in place, with UI details to come.
           </p>
         </div>
-        <div className="rounded-lg border border-black/10 bg-white p-4 text-sm text-black/70">
-          <p className="font-medium text-black">Backend configuration</p>
-          <p>
-            Configure <code>NEXT_PUBLIC_BACKEND_URL</code> in your environment
-            to point at the API service.
-          </p>
-          <p className="mt-2 text-black">
-            Current backend URL: <code>{backendUrl}</code>
-          </p>
-        </div>
+        <InfoPanel />
       </div>
     </section>
   );
