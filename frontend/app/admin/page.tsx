@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Bell, Shield, UserCog } from "lucide-react";
+import { Activity, Bell, Shield, UserCog } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -29,6 +29,34 @@ const riskSnapshot = [
   { label: "High", value: 42, color: "bg-red-400" },
   { label: "Medium", value: 64, color: "bg-red-300" },
   { label: "Low", value: 82, color: "bg-white/40" },
+];
+
+const serviceStats = [
+  {
+    label: "Active engagements",
+    value: "18",
+    detail: "+4 this month",
+    icon: Shield,
+  },
+  {
+    label: "Open incidents",
+    value: "6",
+    detail: "2 escalated",
+    icon: Bell,
+  },
+  {
+    label: "Compliance coverage",
+    value: "92%",
+    detail: "GDPR / ISO27001",
+    icon: UserCog,
+  },
+];
+
+const activityFeed = [
+  "SOC escalated two critical findings.",
+  "Red team engagement completed for fintech client.",
+  "Cloud posture review scheduled for next week.",
+  "Threat intel briefing shared with executive team.",
 ];
 
 export default function AdminDashboard() {
@@ -138,6 +166,35 @@ export default function AdminDashboard() {
             </motion.div>
           )}
 
+          <div className="grid gap-4 md:grid-cols-3">
+            {serviceStats.map((stat) => {
+              const Icon = stat.icon;
+              return (
+                <motion.div
+                  key={stat.label}
+                  className="rounded-2xl border border-white/10 bg-white/5 p-5"
+                  whileHover={hoverLift}
+                  transition={hoverTransition}
+                >
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-xs uppercase tracking-[0.3em] text-white/50">
+                        {stat.label}
+                      </p>
+                      <p className="mt-2 text-2xl font-semibold text-white">
+                        {stat.value}
+                      </p>
+                      <p className="text-xs text-white/60">{stat.detail}</p>
+                    </div>
+                    <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-red-500/20">
+                      <Icon className="h-5 w-5 text-red-400" />
+                    </span>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+
           <div className="grid gap-6 md:grid-cols-2">
             <motion.div
               className="rounded-2xl border border-white/10 bg-white/5 p-6"
@@ -219,6 +276,27 @@ export default function AdminDashboard() {
                 </div>
               ))}
             </div>
+          </motion.div>
+
+          <motion.div
+            className="rounded-2xl border border-white/10 bg-white/5 p-6"
+            whileHover={hoverLift}
+            transition={hoverTransition}
+          >
+            <div className="flex items-center gap-3">
+              <Activity className="h-5 w-5 text-red-400" />
+              <h2 className="text-lg font-semibold text-white">
+                Activity feed
+              </h2>
+            </div>
+            <ul className="mt-4 space-y-3 text-sm text-white/70">
+              {activityFeed.map((item) => (
+                <li key={item} className="flex items-start gap-3">
+                  <span className="mt-2 h-1.5 w-1.5 rounded-full bg-red-400" />
+                  {item}
+                </li>
+              ))}
+            </ul>
           </motion.div>
 
           {error && (

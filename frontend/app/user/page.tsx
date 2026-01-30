@@ -32,6 +32,12 @@ const progressMetrics = [
   { label: "Incident readiness", value: 84, color: "bg-red-300" },
 ];
 
+const notifications = [
+  "New phishing simulation report available.",
+  "Quarterly risk assessment scheduled for next week.",
+  "Policy update: Zero Trust access guidelines published.",
+];
+
 export default function UserDashboard() {
   const { auth, logout } = useAuth();
   const router = useRouter();
@@ -164,24 +170,50 @@ export default function UserDashboard() {
               <div className="flex items-center gap-3">
                 <ClipboardCheck className="h-5 w-5 text-red-400" />
                 <h2 className="text-lg font-semibold text-white">
-                  Recommended services
+                  Subscribed services
                 </h2>
               </div>
-              <ul className="mt-4 space-y-3 text-sm text-white/70">
+              <div className="mt-4 grid gap-3 text-sm text-white/70 sm:grid-cols-2">
                 {services.length === 0 && (
-                  <li>Loading service recommendations...</li>
+                  <div className="col-span-2 text-white/60">
+                    Loading service recommendations...
+                  </div>
                 )}
                 {services.map((service) => (
-                  <li key={service.id}>
+                  <div
+                    key={service.id}
+                    className="rounded-2xl border border-white/10 bg-black/40 p-3"
+                  >
                     <p className="font-semibold text-white">{service.name}</p>
                     <p className="text-xs text-white/60">
                       {service.description}
                     </p>
-                  </li>
+                  </div>
                 ))}
-              </ul>
+              </div>
             </motion.div>
           </div>
+
+          <motion.div
+            className="rounded-2xl border border-white/10 bg-white/5 p-6"
+            whileHover={hoverLift}
+            transition={hoverTransition}
+          >
+            <div className="flex items-center gap-3">
+              <Shield className="h-5 w-5 text-red-400" />
+              <h2 className="text-lg font-semibold text-white">
+                Notifications
+              </h2>
+            </div>
+            <ul className="mt-4 space-y-3 text-sm text-white/70">
+              {notifications.map((note) => (
+                <li key={note} className="flex items-start gap-3">
+                  <span className="mt-2 h-1.5 w-1.5 rounded-full bg-red-400" />
+                  {note}
+                </li>
+              ))}
+            </ul>
+          </motion.div>
 
           <motion.div
             className="rounded-2xl border border-white/10 bg-white/5 p-6"
