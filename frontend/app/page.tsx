@@ -12,11 +12,12 @@ import {
   Users,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { type FormEvent, useState } from "react";
+import { type FormEvent, useEffect, useState } from "react";
 
 import { useAuth } from "../components/auth/AuthProvider";
 
 type LoginStatus = { type: "success" | "error"; message: string } | null;
+type ServiceItem = { id: string; name: string; description: string };
 
 const apiBase =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000";
@@ -130,6 +131,24 @@ const successStories = [
   },
 ];
 
+const fallbackPortfolio: ServiceItem[] = [
+  {
+    id: "vulnerability",
+    name: "Vulnerability Management",
+    description: "Continuous testing, remediation, and risk prioritization.",
+  },
+  {
+    id: "incident",
+    name: "Incident Response",
+    description: "Rapid containment and recovery playbooks.",
+  },
+  {
+    id: "privacy",
+    name: "Privacy & Compliance",
+    description: "Framework alignment across GDPR, DPDP, ISO27001.",
+  },
+];
+
 const validateEmail = (value: string) =>
   /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 
@@ -148,6 +167,46 @@ export default function Home() {
   const [userLoading, setUserLoading] = useState(false);
   const [adminLoading, setAdminLoading] = useState(false);
   const [ssoLoading, setSsoLoading] = useState(false);
+  const [publicServices, setPublicServices] = useState<ServiceItem[]>([]);
+  const [publicServicesError, setPublicServicesError] = useState<string | null>(
+    null,
+  );
+  const [publicServicesLoading, setPublicServicesLoading] = useState(true);
+
+  useEffect(() => {
+    let isMounted = true;
+    const loadServices = async () => {
+      try {
+        const response = await fetch(`${apiBase}/services`, {
+          method: "GET",
+          cache: "no-store",
+        });
+        if (!response.ok) {
+          throw new Error("Service request failed");
+        }
+        const data = (await response.json()) as ServiceItem[];
+        if (isMounted) {
+          setPublicServices(data);
+          setPublicServicesError(null);
+        }
+      } catch {
+        if (isMounted) {
+          setPublicServicesError(
+            "Live service portfolio unavailable. Showing curated highlights.",
+          );
+        }
+      } finally {
+        if (isMounted) {
+          setPublicServicesLoading(false);
+        }
+      }
+    };
+
+    loadServices();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const submitLogin = async (
     endpoint: string,
@@ -536,6 +595,56 @@ export default function Home() {
               </motion.div>
             ))}
           </motion.div>
+          <motion.div
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, amount: 0.3 }}
+            variants={stagger}
+            className="space-y-4"
+          >
+            <motion.h3
+              variants={fadeUp}
+              className="text-xl font-semibold text-white"
+            >
+              Live service portfolio
+            </motion.h3>
+            <motion.p variants={fadeUp} className="text-sm text-white/60">
+              Pulled from the Be4Breach API to verify frontend-backend
+              connectivity.
+            </motion.p>
+            {publicServicesError && (
+              <motion.p variants={fadeUp} className="text-xs text-red-300">
+                {publicServicesError}
+              </motion.p>
+            )}
+          </motion.div>
+          <div className="grid gap-6 md:grid-cols-3">
+            {(publicServicesLoading
+              ? fallbackPortfolio
+              : publicServices.length > 0
+                ? publicServices
+                : fallbackPortfolio
+            ).map((service) => (
+              <motion.div
+                key={service.id}
+                initial="hidden"
+                whileInView="show"
+                viewport={{ once: true, amount: 0.3 }}
+                variants={fadeUp}
+                whileHover={hoverLift}
+                whileTap={{ scale: 0.98 }}
+                transition={hoverTransition}
+                className="rounded-2xl border border-white/10 bg-white/5 p-6"
+              >
+                <p className="text-sm font-semibold text-white">
+                  {service.name}
+                </p>
+                <p className="mt-2 text-sm text-white/60">
+                  {service.description}
+                </p>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </section>
 

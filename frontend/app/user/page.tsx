@@ -26,6 +26,12 @@ const apiBase =
 const hoverLift = { y: -6 };
 const hoverTransition = { type: "spring", stiffness: 300, damping: 20 };
 
+const progressMetrics = [
+  { label: "Training completion", value: 76, color: "bg-red-500" },
+  { label: "Assessment coverage", value: 58, color: "bg-red-400" },
+  { label: "Incident readiness", value: 84, color: "bg-red-300" },
+];
+
 export default function UserDashboard() {
   const { auth, logout } = useAuth();
   const router = useRouter();
@@ -176,6 +182,41 @@ export default function UserDashboard() {
               </ul>
             </motion.div>
           </div>
+
+          <motion.div
+            className="rounded-2xl border border-white/10 bg-white/5 p-6"
+            whileHover={hoverLift}
+            transition={hoverTransition}
+          >
+            <div className="flex items-center gap-3">
+              <ClipboardCheck className="h-5 w-5 text-red-400" />
+              <h2 className="text-lg font-semibold text-white">
+                Progress overview
+              </h2>
+            </div>
+            <p className="mt-2 text-sm text-white/60">
+              Track your readiness across training, assessments, and response
+              planning.
+            </p>
+            <div className="mt-4 space-y-3">
+              {progressMetrics.map((item) => (
+                <div key={item.label} className="space-y-2">
+                  <div className="flex items-center justify-between text-xs text-white/60">
+                    <span>{item.label}</span>
+                    <span>{item.value}%</span>
+                  </div>
+                  <div className="h-2 w-full rounded-full bg-white/10">
+                    <motion.span
+                      className={`block h-2 rounded-full ${item.color}`}
+                      initial={{ width: 0 }}
+                      animate={{ width: `${item.value}%` }}
+                      transition={{ duration: 0.8, ease: "easeOut" }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </motion.div>
 
           {error && (
             <p className="text-sm text-red-300" role="status">

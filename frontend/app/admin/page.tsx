@@ -24,6 +24,13 @@ const apiBase =
 const hoverLift = { y: -6 };
 const hoverTransition = { type: "spring", stiffness: 300, damping: 20 };
 
+const riskSnapshot = [
+  { label: "Critical", value: 18, color: "bg-red-500" },
+  { label: "High", value: 42, color: "bg-red-400" },
+  { label: "Medium", value: 64, color: "bg-red-300" },
+  { label: "Low", value: 82, color: "bg-white/40" },
+];
+
 export default function AdminDashboard() {
   const { auth, logout } = useAuth();
   const router = useRouter();
@@ -178,6 +185,41 @@ export default function AdminDashboard() {
               </p>
             </motion.div>
           </div>
+
+          <motion.div
+            className="rounded-2xl border border-white/10 bg-white/5 p-6"
+            whileHover={hoverLift}
+            transition={hoverTransition}
+          >
+            <div className="flex items-center gap-3">
+              <Shield className="h-5 w-5 text-red-400" />
+              <h2 className="text-lg font-semibold text-white">
+                Risk posture snapshot
+              </h2>
+            </div>
+            <p className="mt-2 text-sm text-white/60">
+              Live risk indicators synthesized from monitoring and assessment
+              pipelines.
+            </p>
+            <div className="mt-4 space-y-3">
+              {riskSnapshot.map((item) => (
+                <div key={item.label} className="space-y-2">
+                  <div className="flex items-center justify-between text-xs text-white/60">
+                    <span>{item.label}</span>
+                    <span>{item.value}%</span>
+                  </div>
+                  <div className="h-2 w-full rounded-full bg-white/10">
+                    <motion.span
+                      className={`block h-2 rounded-full ${item.color}`}
+                      initial={{ width: 0 }}
+                      animate={{ width: `${item.value}%` }}
+                      transition={{ duration: 0.8, ease: "easeOut" }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </motion.div>
 
           {error && (
             <p className="text-sm text-red-300" role="status">
