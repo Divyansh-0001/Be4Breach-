@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 
 import { backendUrl } from "@/lib/config";
+import { useRole } from "@/hooks/useRole";
 
 type InfoData = {
   name: string;
@@ -15,6 +16,7 @@ export default function InfoPanel() {
   const [state, setState] = useState<LoadState>("idle");
   const [data, setData] = useState<InfoData | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const { authFetch } = useRole();
 
   const loadInfo = useCallback(async (signal?: AbortSignal) => {
     setState("loading");
@@ -22,7 +24,7 @@ export default function InfoPanel() {
     setData(null);
 
     try {
-      const response = await fetch(new URL("/api/info", backendUrl), {
+      const response = await authFetch(new URL("/api/info", backendUrl), {
         method: "GET",
         headers: {
           Accept: "application/json",
@@ -51,7 +53,7 @@ export default function InfoPanel() {
       setError(message);
       setState("error");
     }
-  }, []);
+  }, [authFetch]);
 
   useEffect(() => {
     const controller = new AbortController();

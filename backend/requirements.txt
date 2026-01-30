@@ -1,2 +1,4 @@
 fastapi
+google-auth
+python-jose[cryptography]
 uvicorn[standard]
