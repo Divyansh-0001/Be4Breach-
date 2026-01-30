@@ -1,0 +1,7 @@
+fastapi
+uvicorn[standard]
+python-dotenv
+fastapi-cors
+python-jose[cryptography]
+authlib
+httpx
