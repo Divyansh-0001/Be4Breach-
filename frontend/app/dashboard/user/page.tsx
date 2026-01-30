@@ -6,7 +6,8 @@ import AnimatedButton from "../../../components/ui/animated-button";
 import AnimatedCard from "../../../components/ui/animated-card";
 import AnimatedSection from "../../../components/ui/animated-section";
 import RoleGuard from "../../../components/auth/role-guard";
-import { fetchJson } from "../../../lib/api";
+import { ApiError, fetchJson } from "../../../lib/api";
+import { clearSession } from "../../../lib/auth";
 
 type UserDashboardSummary = {
   alerts?: number;
@@ -23,6 +24,7 @@ const quickLinks = [
 export default function UserDashboardPage() {
   const [summary, setSummary] = useState<UserDashboardSummary | null>(null);
   const [status, setStatus] = useState<"idle" | "loading" | "ready">("idle");
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     let isMounted = true;
@@ -32,10 +34,19 @@ export default function UserDashboardPage() {
         if (isMounted) {
           setSummary(data);
           setStatus("ready");
+          setErrorMessage("");
         }
       })
-      .catch(() => {
+      .catch((error) => {
         if (isMounted) {
+          if (error instanceof ApiError && error.status >= 401) {
+            clearSession();
+            setErrorMessage(
+              "Your session has expired. Please sign in again to refresh your dashboard."
+            );
+          } else {
+            setErrorMessage("Unable to load dashboard data at the moment.");
+          }
           setSummary(null);
           setStatus("idle");
         }
@@ -69,6 +80,11 @@ export default function UserDashboardPage() {
       </AnimatedSection>
 
       <AnimatedSection className="mx-auto w-full max-w-6xl px-4 pb-16 sm:px-6">
+        {errorMessage ? (
+          <div className="mb-6 rounded-2xl border border-amber-400/30 bg-amber-400/10 px-4 py-3 text-sm text-amber-200">
+            {errorMessage}
+          </div>
+        ) : null}
         <div className="grid gap-6 md:grid-cols-3">
           <AnimatedCard>
             <p className="text-xs uppercase tracking-[0.2em] text-slate-400">

@@ -1,75 +1,45 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useMemo, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
-import Logo from "../../components/logo";
 import AnimatedButton from "../../components/ui/animated-button";
 import AnimatedCard from "../../components/ui/animated-card";
 import AnimatedSection from "../../components/ui/animated-section";
-import GoogleSSOButton from "../../components/auth/google-sso-button";
-import { loginWithRole } from "../../lib/auth-api";
+import Logo from "../../components/logo";
+import { registerUser } from "../../lib/auth-api";
 import { ApiError } from "../../lib/api";
-import { setSession, type AuthRole, type AuthSession } from "../../lib/auth";
-
-const roleOptions: Array<{
-  role: AuthRole;
-  label: string;
-  description: string;
-}> = [
-  {
-    role: "User",
-    label: "User login",
-    description: "Access your security posture, reports, and service insights.",
-  },
-  {
-    role: "Admin",
-    label: "Admin login",
-    description: "Manage governance, teams, and compliance workflows.",
-  },
-];
+import { setSession } from "../../lib/auth";
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-export default function LoginPage() {
+export default function RegisterPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const queryRole = searchParams.get("role");
-  const initialRole: AuthRole = queryRole === "Admin" ? "Admin" : "User";
-
-  const [role, setRole] = useState<AuthRole>(initialRole);
-  const [formData, setFormData] = useState({ email: "", password: "" });
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    company: "",
+  });
   const [errors, setErrors] = useState<{
+    name?: string;
     email?: string;
     password?: string;
     form?: string;
   }>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const redirectTarget = useMemo(() => {
-    const redirect = searchParams.get("redirect");
-    const defaultRedirect =
-      role === "Admin" ? "/dashboard/admin" : "/dashboard/user";
-
-    if (queryRole && queryRole !== role) {
-      return defaultRedirect;
-    }
-
-    return redirect ?? defaultRedirect;
-  }, [queryRole, role, searchParams]);
-
-  const errorMessage =
-    searchParams.get("error") === "unauthorized"
-      ? "Your session does not have access to that dashboard. Please sign in with the correct role."
-      : "";
-
-  const handleChange = (field: "email" | "password", value: string) => {
+  const handleChange = (field: keyof typeof formData, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   const validateForm = () => {
     const nextErrors: typeof errors = {};
+
+    if (!formData.name || formData.name.trim().length < 2) {
+      nextErrors.name = "Please enter your full name.";
+    }
 
     if (!formData.email || !emailPattern.test(formData.email)) {
       nextErrors.email = "Please enter a valid work email.";
@@ -93,30 +63,24 @@ export default function LoginPage() {
 
     try {
       setIsSubmitting(true);
-      const session = await loginWithRole(role, formData);
+      const session = await registerUser({
+        name: formData.name.trim(),
+        email: formData.email.trim(),
+        password: formData.password,
+        company: formData.company.trim() || undefined,
+      });
       setSession(session);
-      router.push(redirectTarget);
+      router.push("/dashboard/user");
     } catch (error) {
       const message =
         error instanceof ApiError
           ? error.message
-          : "Login failed. Please verify your credentials or try again.";
+          : "Registration failed. Please try again.";
       setErrors({ form: message });
     } finally {
       setIsSubmitting(false);
     }
   };
-
-  const handleGoogleSuccess = (session: AuthSession) => {
-    setSession(session);
-    router.push(redirectTarget);
-  };
-
-  const handleGoogleError = (message: string) => {
-    setErrors({ form: message });
-  };
-
-  const activeRoleCopy = roleOptions.find((option) => option.role === role);
 
   return (
     <div className="relative overflow-hidden">
@@ -129,72 +93,48 @@ export default function LoginPage() {
             transition={{ duration: 0.5, ease: "easeOut" }}
           >
             <p className="text-sm uppercase tracking-[0.3em] text-sky-300">
-              Secure Access
+              New Account
             </p>
             <h1 className="mt-4 text-4xl font-semibold text-white sm:text-5xl">
-              Sign in to Be4Breach
+              Join Be4Breach to stay ahead of cyber risk.
             </h1>
             <p className="mt-6 text-base text-slate-300">
-              Role-based access ensures every stakeholder gets the right
-              visibility and actions across proactive defense, active monitoring,
-              and response workflows.
+              Create your user workspace and gain access to security insights,
+              compliance tracking, and service updates as we connect backend
+              data streams.
             </p>
-            <div className="mt-8 grid gap-4 sm:grid-cols-2">
-              {roleOptions.map((option) => (
-                <AnimatedCard key={option.role} className="h-full">
-                  <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
-                    {option.label}
-                  </p>
-                  <p className="mt-2 text-sm text-slate-300">
-                    {option.description}
-                  </p>
-                </AnimatedCard>
-              ))}
-            </div>
           </motion.div>
 
           <AnimatedCard className="relative">
             <div className="flex flex-col items-center gap-2 text-center">
               <Logo className="justify-center" size={36} />
               <p className="text-sm text-slate-400">
-                {activeRoleCopy?.description}
+                Register a Be4Breach user account.
               </p>
             </div>
 
-            <div className="mt-6 grid grid-cols-2 gap-2 rounded-full border border-white/10 bg-slate-950/70 p-1">
-              {roleOptions.map((option) => {
-                const isActive = role === option.role;
-                return (
-                  <motion.button
-                    key={option.role}
-                    type="button"
-                    onClick={() => setRole(option.role)}
-                    whileTap={{ scale: 0.97 }}
-                    className={`rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] transition ${
-                      isActive
-                        ? "bg-sky-400 text-slate-950"
-                        : "text-slate-300 hover:text-white"
-                    }`}
-                  >
-                    {option.role}
-                  </motion.button>
-                );
-              })}
-            </div>
-
             <form onSubmit={handleSubmit} className="mt-6 grid gap-4">
-              {errorMessage ? (
-                <div className="rounded-xl border border-amber-400/30 bg-amber-400/10 px-4 py-3 text-sm text-amber-200">
-                  {errorMessage}
-                </div>
-              ) : null}
               {errors.form ? (
                 <div className="rounded-xl border border-rose-400/30 bg-rose-400/10 px-4 py-3 text-sm text-rose-200">
                   {errors.form}
                 </div>
               ) : null}
               <label className="grid gap-2 text-sm text-slate-300">
-                Email address
+                Full name
+                <input
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={(event) => handleChange("name", event.target.value)}
+                  placeholder="Jane Doe"
+                  className="rounded-xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-white outline-none transition focus:border-sky-400"
+                />
+                {errors.name ? (
+                  <span className="text-xs text-rose-300">{errors.name}</span>
+                ) : null}
+              </label>
+              <label className="grid gap-2 text-sm text-slate-300">
+                Work email
                 <input
                   type="email"
                   name="email"
@@ -216,7 +156,7 @@ export default function LoginPage() {
                   onChange={(event) =>
                     handleChange("password", event.target.value)
                   }
-                  placeholder="Enter your password"
+                  placeholder="Create a password"
                   className="rounded-xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-white outline-none transition focus:border-sky-400"
                 />
                 {errors.password ? (
@@ -225,36 +165,37 @@ export default function LoginPage() {
                   </span>
                 ) : null}
               </label>
+              <label className="grid gap-2 text-sm text-slate-300">
+                Company (optional)
+                <input
+                  type="text"
+                  name="company"
+                  value={formData.company}
+                  onChange={(event) =>
+                    handleChange("company", event.target.value)
+                  }
+                  placeholder="Company name"
+                  className="rounded-xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-white outline-none transition focus:border-sky-400"
+                />
+              </label>
               <AnimatedButton
                 type="submit"
                 variant="primary"
                 disabled={isSubmitting}
                 className="w-full"
               >
-                {isSubmitting ? "Signing in..." : "Sign in"}
+                {isSubmitting ? "Creating account..." : "Create account"}
               </AnimatedButton>
             </form>
 
-            <div className="my-6 flex items-center gap-3 text-xs text-slate-500">
-              <span className="h-px flex-1 bg-white/10" />
-              or continue with
-              <span className="h-px flex-1 bg-white/10" />
-            </div>
-
-            <GoogleSSOButton
-              role={role}
-              onSuccess={handleGoogleSuccess}
-              onError={handleGoogleError}
-            />
-
             <p className="mt-6 text-center text-xs text-slate-400">
-              Don&apos;t have an account?{" "}
+              Already have access?{" "}
               <button
                 type="button"
-                onClick={() => router.push("/register")}
+                onClick={() => router.push("/login")}
                 className="font-semibold text-sky-300 transition hover:text-sky-200"
               >
-                Register here
+                Sign in
               </button>
               .
             </p>
