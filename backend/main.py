@@ -7,6 +7,7 @@ from starlette.middleware.sessions import SessionMiddleware
 
 from backend.api.auth import router as auth_router
 from backend.api.routes import router as routes_router
+from backend.api.secure_routes import admin_router, user_router
 
 load_dotenv()
 
@@ -35,3 +36,5 @@ def health_check() -> dict:
 
 app.include_router(auth_router, tags=["auth"])
 app.include_router(routes_router, tags=["content"])
+app.include_router(admin_router, tags=["admin"])
+app.include_router(user_router, tags=["user"])

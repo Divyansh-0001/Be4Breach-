@@ -1,6 +1,6 @@
 import os
 from datetime import datetime, timedelta, timezone
-from typing import Iterable
+from typing import Iterable, Optional
 
 import bcrypt
 from fastapi import Depends, HTTPException, status
@@ -12,7 +12,7 @@ from backend.schemas.auth import TokenPayload
 ROLE_ADMIN = "admin"
 ROLE_USER = "user"
 
-auth_scheme = HTTPBearer()
+auth_scheme = HTTPBearer(auto_error=False)
 
 
 def _jwt_secret() -> str:
@@ -47,22 +47,24 @@ def create_access_token(subject: str, role: str) -> str:
     return jwt.encode(payload, _jwt_secret(), algorithm=_jwt_algorithm())
 
 
+def _unauthorized(detail: str) -> HTTPException:
+    return HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail=detail,
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+
+
 def decode_access_token(token: str) -> TokenPayload:
     try:
         payload = jwt.decode(token, _jwt_secret(), algorithms=[_jwt_algorithm()])
         subject = payload.get("sub")
         role = payload.get("role")
         if not subject or not role:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid authentication token",
-            )
+            raise _unauthorized("Invalid authentication token")
         return TokenPayload(sub=subject, role=role)
     except JWTError as exc:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid authentication token",
-        ) from exc
+        raise _unauthorized("Invalid authentication token") from exc
     except RuntimeError as exc:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -71,17 +73,21 @@ def decode_access_token(token: str) -> TokenPayload:
 
 
 def get_current_user(
-    credentials: HTTPAuthorizationCredentials = Depends(auth_scheme),
+    credentials: Optional[HTTPAuthorizationCredentials] = Depends(auth_scheme),
 ) -> TokenPayload:
+    if credentials is None:
+        raise _unauthorized("Authorization header missing")
     return decode_access_token(credentials.credentials)
 
 
 def require_role(required_role: str):
+    role_label = "Admin" if required_role == ROLE_ADMIN else "User"
+
     def dependency(user: TokenPayload = Depends(get_current_user)) -> TokenPayload:
         if user.role != required_role:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail="Insufficient permissions",
+                detail=f"{role_label} access required",
             )
         return user
 
