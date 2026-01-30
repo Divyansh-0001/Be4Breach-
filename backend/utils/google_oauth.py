@@ -30,11 +30,17 @@ def build_google_oauth() -> OAuth:
 
 
 async def verify_google_id_token(id_token: str) -> dict:
-    async with httpx.AsyncClient(timeout=10.0) as client:
-        response = await client.get(
-            "https://oauth2.googleapis.com/tokeninfo",
-            params={"id_token": id_token},
-        )
+    try:
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            response = await client.get(
+                "https://oauth2.googleapis.com/tokeninfo",
+                params={"id_token": id_token},
+            )
+    except httpx.RequestError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Unable to reach Google OAuth",
+        ) from exc
     if response.status_code != 200:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
