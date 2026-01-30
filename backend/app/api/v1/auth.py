@@ -36,19 +36,24 @@ class AuthResponse(BaseModel):
     user: AuthUser
 
 
-class RegisterRequest(BaseModel):
+class RequestModel(BaseModel):
+    class Config:
+        anystr_strip_whitespace = True
+
+
+class RegisterRequest(RequestModel):
     name: str = Field(min_length=2, max_length=100)
     email: EmailStr
     password: str = Field(min_length=8, max_length=128)
     company: str | None = Field(default=None, max_length=120)
 
 
-class LoginRequest(BaseModel):
+class LoginRequest(RequestModel):
     email: EmailStr
     password: str = Field(min_length=8, max_length=128)
 
 
-class GoogleLoginRequest(BaseModel):
+class GoogleLoginRequest(RequestModel):
     id_token: str = Field(min_length=10)
     role: AuthRole = "User"
 

@@ -10,7 +10,12 @@ logger = logging.getLogger("be4breach.contact")
 router = APIRouter(prefix="/contact", tags=["contact"])
 
 
-class ContactRequest(BaseModel):
+class RequestModel(BaseModel):
+    class Config:
+        anystr_strip_whitespace = True
+
+
+class ContactRequest(RequestModel):
     name: str = Field(min_length=2, max_length=100)
     email: EmailStr
     company: str | None = Field(default=None, max_length=120)

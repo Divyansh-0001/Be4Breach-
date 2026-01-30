@@ -18,11 +18,19 @@ def _get_int(value: str | None, default: int) -> int:
         return default
 
 
+def _get_bool(value: str | None, default: bool) -> bool:
+    if value is None:
+        return default
+    return value.strip().lower() in {"1", "true", "yes", "on"}
+
+
 @dataclass(frozen=True)
 class Settings:
     app_name: str
     environment: str
     cors_origins: list[str]
+    allowed_hosts: list[str]
+    https_redirect: bool
     jwt_secret_key: str
     jwt_algorithm: str
     access_token_expire_minutes: int
@@ -41,6 +49,8 @@ def get_settings() -> Settings:
         app_name=os.getenv("APP_NAME", "Be4Breach API"),
         environment=os.getenv("ENVIRONMENT", "development"),
         cors_origins=_parse_csv(os.getenv("CORS_ORIGINS", "http://localhost:3000")),
+        allowed_hosts=_parse_csv(os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1")),
+        https_redirect=_get_bool(os.getenv("HTTPS_REDIRECT"), False),
         jwt_secret_key=os.getenv("JWT_SECRET_KEY", "change-me"),
         jwt_algorithm=os.getenv("JWT_ALGORITHM", "HS256"),
         access_token_expire_minutes=_get_int(
