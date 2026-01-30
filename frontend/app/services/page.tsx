@@ -1,4 +1,11 @@
 import Link from "next/link";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Services",
+  description:
+    "Explore Be4Breach services for threat intelligence, readiness drills, and response automation.",
+};
 
 export default function ServicesPage() {
   return (

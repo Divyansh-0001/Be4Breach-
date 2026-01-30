@@ -1,3 +1,11 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Contact",
+  description:
+    "Connect with the Be4Breach team to plan your cybersecurity readiness strategy.",
+};
+
 export default function ContactPage() {
   return (
     <section className="mx-auto w-full max-w-6xl px-6 py-16">

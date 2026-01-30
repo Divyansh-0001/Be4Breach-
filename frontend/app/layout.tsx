@@ -15,8 +15,25 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Be4Breach",
-  description: "Be4Breach website",
+  title: {
+    default: "Be4Breach",
+    template: "%s | Be4Breach",
+  },
+  description:
+    "Be4Breach delivers AI-driven cybersecurity readiness, threat intelligence, and response automation.",
+  openGraph: {
+    title: "Be4Breach",
+    description:
+      "Be4Breach delivers AI-driven cybersecurity readiness, threat intelligence, and response automation.",
+    siteName: "Be4Breach",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Be4Breach",
+    description:
+      "Be4Breach delivers AI-driven cybersecurity readiness, threat intelligence, and response automation.",
+  },
 };
 
 export default function RootLayout({
